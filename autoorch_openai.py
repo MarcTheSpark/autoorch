@@ -2,7 +2,11 @@ import openai
 import json
 from scamp_extensions.pitch import ScaleType
 
-openai.api_key = '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'
+with open("config.json", 'r') as config_file:
+    config = json.load(config_file)
+    
+
+openai.api_key = config["OpenAI API Key"]
 
 
 preamble = """Make a JSON dictionary describing the given musical parameters for a

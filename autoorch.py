@@ -10,7 +10,6 @@ from scamp_extensions.pitch import Scale, ScaleType
 from dataclasses import dataclass
 from scamp_extensions.utilities import remap, cyclic_slice
 from numpy.fft import irfft
-from matplotlib import pyplot as plt
 import numpy as np
 import random
 import math
@@ -18,6 +17,7 @@ import cmath
 from autoorch_rhythm import rhythm_generator
 from autoorch_openai import get_music_dict
 from autoorch_pitch import measure_chord_consonance
+import json
 import itertools
 
 
@@ -96,27 +96,31 @@ class MusicParametrization:
                     inst.play_chord(chord, self.volume_contour[contour_index], next(self.rhythm_generator))
                 else:
                     inst.play_note(pitch, self.volume_contour[contour_index], next(self.rhythm_generator))
-    
+
+
 # pedal: continousness, sonic density, resonance
 
-s = Session().run_as_server()
+if __name__ == '__main__':
+    
+    s = Session().run_as_server()
 
-piano = s.new_midi_part("MIDI-Through")
+    piano = s.new_midi_part("MIDI-Through")
 
-background_music_parametrization = MusicParametrization(
-    {'singability': 0, 'dissonance': 0.3, 'pitch': 0.5, 'pitch_range': 0.7, 'speed': 0.1,
-     'speed_range': 0, 'volume': 0.2, 'volume_range': 0.3, 'sonic_density': 0.3, 'continuousness': 0.9,
-     'regularity': 1.0, 'scale': ScaleType.chromatic(), 'resonance': 0.8}
-)
+    background_music_parametrization = MusicParametrization(
+        {'singability': 0, 'dissonance': 0.3, 'pitch': 0.5, 'pitch_range': 0.7, 'speed': 0.1,
+         'speed_range': 0, 'volume': 0.2, 'volume_range': 0.3, 'sonic_density': 0.3, 'continuousness': 0.9,
+         'regularity': 1.0, 'scale': ScaleType.chromatic(), 'resonance': 0.8}
+    )
 
 
-current_music = s.fork(background_music_parametrization.play, args=(piano, ))
+    current_music = s.fork(background_music_parametrization.play, args=(piano, ))
 
-while True:
-    description = input("What kind of music do you want to hear? ")
-    print(f"Sending \"{description}\" to Georg Philipp Telemann for consideration...")
-    new_music_parametrization = MusicParametrization(get_music_dict(description))
-    print(f"Here's what he said: {new_music_parametrization.parameters}")
-    current_music.kill()
-    current_music = s.fork(new_music_parametrization.play, args=(piano, ))
+    while True:
+        description = input("What kind of music do you want to hear? ")
+        print(f"Sending \"{description}\" to Georg Philipp Telemann for consideration...")
+        new_music_parametrization = MusicParametrization(get_music_dict(description))
+        
+        print(f"Here's what he said: {new_music_parametrization.parameters}")
+        current_music.kill()
+        current_music = s.fork(new_music_parametrization.play, args=(piano, ))
 

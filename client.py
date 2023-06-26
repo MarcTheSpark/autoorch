@@ -62,6 +62,6 @@ while True:
 
 current_music.kill()
 del current_music
-s.fork(play_tag())
+s.fork(play_tag)
 time.sleep(10)
 s.kill()

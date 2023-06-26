@@ -68,14 +68,21 @@ _scale_names_to_types = {
     "chromatic": ScaleType.chromatic()
 }
 
-def get_music_dict(description):
+def get_music_dict(description, timeout=8):
 #     print(f"Sending \"{description}\" to openai...", end=" ")
-    completion = openai.ChatCompletion.create(
-        model = 'gpt-3.5-turbo',
-        messages = [{"role": "user", "content": preamble.format(description=description) + prompt}],
-        temperature = 0,
-        max_tokens = 512,
-    )
+    completion = None
+    while completion is None:
+        try:
+            completion = openai.ChatCompletion.create(
+                model = 'gpt-3.5-turbo',
+                messages = [{"role": "user", "content": preamble.format(description=description) + prompt}],
+                temperature = 0,
+                max_tokens = 512,
+                request_timeout = timeout
+            )
+        except openai.error.Timeout:
+            print("Request timed out, trying again")
+            continue
     music_dict = json.loads(completion.choices[0].message["content"])
 #     print("Response received:")
     music_dict["scale"] = _scale_names_to_types.get(music_dict["scale"], ScaleType.diatonic())

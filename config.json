@@ -3,5 +3,6 @@
 	"parameter_output_file": "Params.json",
 	"MIDI device name": "MIDI Through",
 	"TCP Listening Port": 7654,
-	"TCP IP Address": "localhost"
+	"TCP IP Address": "localhost",
+	"Ending Phrase": "Ende"
 }

@@ -47,7 +47,7 @@ current_music = s.fork(background_music_parametrization.play, args=(piano, ))
 
 while True:
     description = server_socket.recv(1024).decode().strip()
-    if description == config["Ending Phrase"]:
+    if description.lower() == config["Ending Phrase"].lower():
         print("Received ending phrase")
         break
     print(f"Received \"{description}\". Sending to Georg Philipp Telemann for consideration...")

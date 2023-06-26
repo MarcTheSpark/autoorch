@@ -1,5 +1,5 @@
 {
-	"OpenAI API Key": "PASTE OPENAI API KEY HERE",
+	"OpenAI API Key": "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",
 	"parameter_output_file": "Params.json",
 	"MIDI device name": "MIDI Through",
 	"TCP Listening Port": 7654,

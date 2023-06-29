@@ -33,9 +33,6 @@ def play_tag():
     piano.play_chord([26, 38], 0.8, 5)
 
 
-piano.send_midi_cc(64, 1)
-s.fork(play_tag)
-
 current_music_parametrization = MusicParametrization(
     {'singability': 0, 'dissonance': 0.3, 'pitch': 0.5, 'pitch_range': 0.7, 'speed': 0.1,
      'speed_range': 0, 'volume': 0.2, 'volume_range': 0.3, 'sonic_density': 0.3, 'continuousness': 0.9,
@@ -46,12 +43,16 @@ current_music_parametrization = MusicParametrization(
 current_music = None
 
 def midi_listener(message):
+    print(f"Received message at {message[:2]}")
     if list(message[:2]) == config["MIDI Start"] and message[2] > 0:
+        piano.send_midi_cc(64, 1)
+        s.fork(play_tag)
         current_music = s.fork(current_music_parametrization.play, args=(piano, ))
     elif list(message[:2]) == config["MIDI Stop"] and message[2] > 0:
         current_music.kill()
         current_music = None
 
+s.register_midi_listener(midi_listener)
 
 while True:
     description = server_socket.recv(1024).decode().strip()

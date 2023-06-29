@@ -1,10 +1,11 @@
 {
-	"OpenAI API Key": "PASTE OPENAI API KEY HERE",
+	"OpenAI API Key": "PASTE OPENAI KEY HERE",
 	"parameter_output_file": "Params.json",
 	"MIDI device name": "MIDI Through",
 	"TCP Listening Port": 7654,
 	"TCP IP Address": "localhost",
 	"Ending Phrase": "Ende",
+	"MIDI Device Name": "nanoKONTROL2", 
 	"MIDI Start": [176, 41],
 	"MIDI Stop": [176, 42]
 	

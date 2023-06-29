@@ -36,14 +36,22 @@ def play_tag():
 piano.send_midi_cc(64, 1)
 s.fork(play_tag)
 
-background_music_parametrization = MusicParametrization(
+current_music_parametrization = MusicParametrization(
     {'singability': 0, 'dissonance': 0.3, 'pitch': 0.5, 'pitch_range': 0.7, 'speed': 0.1,
      'speed_range': 0, 'volume': 0.2, 'volume_range': 0.3, 'sonic_density': 0.3, 'continuousness': 0.9,
      'regularity': 1.0, 'scale': ScaleType.chromatic(), 'resonance': 0.8}
 )
 
 
-current_music = s.fork(background_music_parametrization.play, args=(piano, ))
+current_music = None
+
+def midi_listener(message):
+    if list(message[:2]) == config["MIDI Start"] and message[2] > 0:
+        current_music = s.fork(current_music_parametrization.play, args=(piano, ))
+    elif list(message[:2]) == config["MIDI Stop"] and message[2] > 0:
+        current_music.kill()
+        current_music = None
+
 
 while True:
     description = server_socket.recv(1024).decode().strip()
@@ -52,16 +60,14 @@ while True:
         break
     print(f"Received \"{description}\". Sending to Georg Philipp Telemann for consideration...")
     parameter_dict = get_music_dict(description)
-    new_music_parametrization = MusicParametrization(parameter_dict)
+    current_music_parametrization = MusicParametrization(parameter_dict)
     print(f"Here's what he said: {parameter_dict}")
     current_music.kill()
-    del current_music
-    current_music = s.fork(new_music_parametrization.play, args=(piano, ))
+    current_music = s.fork(current_music_parametrization.play, args=(piano, ))
     with open(config["parameter_output_file"], 'w') as parameter_output_file:
         json.dump({k: v for k, v in parameter_dict.items() if k != "scale"}, parameter_output_file)
 
 current_music.kill()
-del current_music
 s.fork(play_tag)
-time.sleep(10)
+wait(5)
 s.kill()

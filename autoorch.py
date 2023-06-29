@@ -22,18 +22,7 @@ import itertools
 
 
 class MusicParametrization:
-    
-    scales_by_dissonance = [
-        Scale.pentatonic(60),
-        Scale.from_pitches([60, 62, 64, 66, 67, 69, 72]),
-        Scale.from_pitches([60, 62, 64, 66, 67, 69, 70, 72]),
-        Scale.from_pitches([60, 62, 63, 66, 67, 69, 70, 72]),
-        Scale.from_pitches([60, 61, 63, 64, 66, 67, 69, 70, 72]),
-        Scale.from_pitches([60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 72]),
-        Scale.chromatic(60)
-    ]
 
-    
     def __init__(self, parameters):
         self.parameters = parameters
         self.pitch_contour = MusicParametrization.get_contour(1 - parameters['singability'],
@@ -71,8 +60,8 @@ class MusicParametrization:
  
         return contour
     
-    def play(self, inst: ScampInstrument):
-        scale = Scale(self.parameters['scale'], random.randrange(54, 66))
+    def play(self, inst: ScampInstrument, tonic):
+        scale = Scale(self.parameters['scale'], tonic)
         inst.send_midi_cc(64, 0)
         while True:
             for contour_index in range(0, len(self.pitch_contour), 8):
